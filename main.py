@@ -3771,7 +3771,7 @@ async def update_alert_workflows(
     values = [value for _, value in update_fields] + [monitor_id, api_key]
 
     with get_db() as conn:
-        existing = conn.execute("SELECT team_id FROM monitors WHERE id = ? AND api_key = ?", (monitor_id, api_key)).fetchone()
+        existing = conn.execute("SELECT team_id, webhook_url, slack_webhook_url, discord_webhook_url, sms_number, source, channel, campaign, experiment_id, variant_id, cohort, session_id, plan FROM monitors WHERE id = ? AND api_key = ?", (monitor_id, api_key)).fetchone()
         if not existing:
             raise_api_error(
                 status_code=404,
@@ -3781,6 +3781,12 @@ async def update_alert_workflows(
             )
         existing_team_id = existing["team_id"] if existing["team_id"] else ensure_team_for_api_key(conn, api_key)
         require_team_permission(conn, api_key, x_user_email, existing_team_id, "write")
+
+        # Detect first-alert activation: any channel newly set?
+        was_alert_configured = bool(
+            existing["webhook_url"] or existing["slack_webhook_url"]
+            or existing["discord_webhook_url"] or existing["sms_number"]
+        )
 
         cursor = conn.execute(
             f"UPDATE monitors SET {set_clause} WHERE id = ? AND api_key = ?",
@@ -3800,6 +3806,42 @@ async def update_alert_workflows(
             "SELECT webhook_url, slack_webhook_url, discord_webhook_url, sms_number FROM monitors WHERE id = ?",
             (monitor_id,),
         ).fetchone()
+
+        # Record activation event on first alert configuration
+        if business_arena_enabled() and not was_alert_configured and business_arena_enabled():
+            is_now_configured = bool(
+                monitor["webhook_url"] or monitor["slack_webhook_url"]
+                or monitor["discord_webhook_url"] or monitor["sms_number"]
+            )
+            if is_now_configured:
+                attribution = AttributionContext.from_mapping({
+                    "source": existing["source"],
+                    "channel": existing["channel"],
+                    "campaign": existing["campaign"],
+                    "experiment_id": existing["experiment_id"],
+                    "variant_id": existing["variant_id"],
+                    "cohort": existing["cohort"],
+                    "session_id": existing["session_id"],
+                })
+                record_business_event(
+                    conn,
+                    event_name="first_alert_configured",
+                    attribution=attribution,
+                    surface="monitoring",
+                    value=0.95,
+                    path=f"/monitors/{monitor_id}/alerts",
+                    monitor_id=monitor_id,
+                    plan=existing["plan"] or "free",
+                    metadata={
+                        "channels": {
+                            "webhook": bool(monitor["webhook_url"]),
+                            "slack": bool(monitor["slack_webhook_url"]),
+                            "discord": bool(monitor["discord_webhook_url"]),
+                            "sms": bool(monitor["sms_number"]),
+                        }
+                    },
+                )
+                conn.commit()
 
     return {
         "message": "Alert workflows updated",

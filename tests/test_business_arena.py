@@ -147,6 +147,54 @@ class BusinessArenaTests(unittest.TestCase):
                 self.assertEqual(stats_resp.status_code, 200)
                 self.assertGreaterEqual(stats_resp.json()["signups_today"], 1)
 
+    def test_first_alert_configured_records_activation_event(self) -> None:
+        """PUT /monitors/{id}/alerts should record first_alert_configured (value=0.95)."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            module = load_main_module(Path(temp_dir))
+            with TestClient(module.app) as client:
+                signup_resp = client.post(
+                    "/signup",
+                    json={
+                        "name": "Acme Alert Test",
+                        "url": "https://example.com/api",
+                        "email": "alerts@example.com",
+                        "plan": "pro",
+                        "source": "test-suite",
+                        "channel": "activation-test",
+                        "campaign": "alert-activation",
+                        "experiment_id": "exp-alert",
+                        "variant_id": "var-alert-a",
+                        "session_id": "session-alert",
+                        "create_status_page": False,
+                    },
+                )
+                self.assertEqual(signup_resp.status_code, 201, signup_resp.text)
+                monitor_id = signup_resp.json()["id"]
+                api_key = signup_resp.json()["api_key"]
+
+                rewards_before = client.get(
+                    "/internal/arena/rewards",
+                    params={"experiment_id": "exp-alert"},
+                ).json()
+                count_before = rewards_before["count"]
+                mean_before = rewards_before["rewards"][0]["reward_mean"]
+
+                alert_resp = client.put(
+                    f"/monitors/{monitor_id}/alerts",
+                    headers={"X-API-Key": api_key},
+                    json={"webhook_url": "https://example.com/webhook"},
+                )
+                self.assertEqual(alert_resp.status_code, 200, alert_resp.text)
+
+                rewards_after = client.get(
+                    "/internal/arena/rewards",
+                    params={"experiment_id": "exp-alert"},
+                ).json()
+                self.assertGreaterEqual(rewards_after["rewards"][0]["reward_mean"], mean_before)
+                self.assertGreaterEqual(
+                    rewards_after["rewards"][0]["reward_mean"], 0.90,
+                )
+
     def test_render_home_html_uses_runtime_trust_metrics_with_fallbacks(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             app_db = Path(temp_dir) / "app.db"
