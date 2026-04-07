@@ -3999,6 +3999,62 @@ async def get_monitor_health_score(
     )
 
 
+class UptimeTrendBucket(BaseModel):
+    date: str  # YYYY-MM-DD
+    total: int
+    successful: int
+    uptime_percent: float
+
+
+@app.get("/monitors/{monitor_id}/uptime-trend", response_model=List[UptimeTrendBucket])
+async def get_uptime_trend(
+    monitor_id: int,
+    days: int = 7,
+    api_key: str = Depends(verify_api_key),
+    x_user_email: Optional[str] = Header(None),
+):
+    """Get daily uptime breakdown for a monitor over the last N days (default 7)."""
+    safe_limit = min(max(days, 1), 90)
+    with get_db() as conn:
+        monitor = conn.execute(
+            "SELECT id, api_key, team_id FROM monitors WHERE id = ?", (monitor_id,),
+        ).fetchone()
+        if not monitor:
+            raise_api_error(
+                status_code=404,
+                code="monitor_not_found",
+                message=f"Monitor {monitor_id} was not found.",
+                hint="Verify the monitor ID and API key.",
+            )
+        resource_team_id = monitor["team_id"] if monitor["team_id"] else ensure_team_for_api_key(conn, monitor["api_key"])
+        require_team_permission(conn, api_key, x_user_email, resource_team_id, "read")
+
+        rows = conn.execute(
+            """
+            SELECT date(timestamp, 'unixepoch') AS date,
+                   COUNT(*) AS total,
+                   SUM(success) AS successful
+            FROM checks
+            WHERE monitor_id = ?
+              AND timestamp >= ?
+            GROUP BY date(timestamp, 'unixepoch')
+            ORDER BY date DESC
+            LIMIT ?
+            """,
+            (monitor_id, int(time.time()) - (safe_limit * 86400), safe_limit),
+        ).fetchall()
+
+    return [
+        UptimeTrendBucket(
+            date=r["date"],
+            total=r["total"],
+            successful=r["successful"],
+            uptime_percent=round((r["successful"] / r["total"]) * 100, 2) if r["total"] > 0 else 0.0,
+        )
+        for r in rows
+    ]
+
+
 @app.get("/monitors/{monitor_id}/alerts/timeline", response_model=List[AlertEventResponse])
 async def get_alert_timeline(
     monitor_id: int,
