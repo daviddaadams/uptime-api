@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick question about your status page</title>
+    <style>
+        body { margin: 0; padding: 0; background: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+        .header { margin-bottom: 24px; }
+        .logo { font-size: 24px; font-weight: 700; color: #f97316; text-decoration: none; }
+        .content { background: #1e293b; border-radius: 12px; padding: 40px; }
+        h1 { color: #f8fafc; font-size: 24px; margin: 0 0 16px; }
+        p { color: #94a3b8; line-height: 1.6; margin: 0 0 16px; }
+        .highlight { background: #0f172a; border-left: 3px solid #f97316; padding: 16px; margin: 24px 0; }
+        .highlight p { margin: 0; color: #cbd5e1; }
+        .btn { display: inline-block; padding: 14px 32px; background: #f97316; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 8px 0; }
+        .footer { text-align: center; margin-top: 32px; color: #64748b; font-size: 14px; }
+        .signature { margin-top: 24px; }
+        .signature strong { color: #f8fafc; display: block; }
+        .signature span { color: #94a3b8; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="https://owlpulse.org" class="logo">🦉 OwlPulse</a>
+        </div>
+        <div class="content">
+            <h1>Quick question about your status page</h1>
+            <p>Hi {{first_name}},</p>
+            <p>I noticed you're using {{competitor}} for your status page. No shade — they're fine. But I wanted to let you know there's a free alternative that might save you money.</p>
+            
+            <div class="highlight">
+                <p>💡 OwlPulse gives you custom domains, beautiful templates, and instant alerts — completely free for the basics.</p>
+            </div>
+            
+            <p>We've helped 2,000+ developers build trust with their users. Here's what makes us different:</p>
+            <ul style="color: #94a3b8; line-height: 1.8;">
+                <li>🎨 Beautiful templates (no coding needed)</li>
+                <li>🌐 Your domain at status.yourcompany.com</li>
+                <li>⚡ Instant setup (2 minutes, not 2 hours)</li>
+            </ul>
+            
+            <p>No pressure — just thought I'd flag it in case you're overpaying.</p>
+            
+            <a href="https://owlpulse.org" class="btn">See What's Free →</a>
+            
+            <div class="signature">
+                <strong>— {{sender_name}}</strong>
+                <span>Founder, OwlPulse</span>
+            </div>
+        </div>
+        <div class="footer">
+            <p>P.S. Questions? Just reply. I actually read my email.</p>
+        </div>
+    </div>
+</body>
+</html>

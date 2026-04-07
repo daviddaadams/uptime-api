@@ -1,0 +1,14 @@
+tunnel: 68085cae-f838-45cd-8c33-4b46ee95667e
+credentials-file: /Users/davidadams/uptime-api/.cloudflared/credentials.json
+
+ingress:
+  # API endpoints
+  - hostname: api.owlpulse.org
+    service: http://localhost:8000
+  # Main site (will serve landing page later)
+  - hostname: owlpulse.org
+    service: http://localhost:8000
+  - hostname: www.owlpulse.org
+    service: http://localhost:8000
+  # Catch-all
+  - service: http_status:404

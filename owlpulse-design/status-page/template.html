@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{PAGE_TITLE}}</title>
+  <style>
+    :root {
+      --accent: {{ACCENT_COLOR}};
+      --bg: {{BACKGROUND_COLOR}};
+      --text: {{TEXT_COLOR}};
+      --panel: color-mix(in srgb, var(--bg) 84%, #020617);
+      --muted: color-mix(in srgb, var(--text) 62%, #94a3b8);
+      --up: #22c55e;
+      --down: #ef4444;
+      --unknown: #94a3b8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(900px 500px at 0% -10%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 65%),
+        linear-gradient(180deg, color-mix(in srgb, var(--bg) 72%, #020617), var(--bg));
+      font-family: "Avenir Next", "Manrope", "Segoe UI", sans-serif;
+      padding: 22px 14px 32px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 16px; }
+    .card {
+      background: var(--panel);
+      border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    .hero { padding: 22px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; }
+    .brand-fallback {
+      width: 42px; height: 42px; border-radius: 10px;
+      display: grid; place-items: center;
+      background: color-mix(in srgb, var(--accent) 35%, #111827);
+      font-weight: 700;
+    }
+    h1 {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino", serif;
+      font-size: clamp(1.5rem, 2.6vw, 2.2rem);
+    }
+    .desc { margin: 6px 0 0; color: var(--muted); }
+    .status-pill {
+      margin-top: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 600;
+    }
+    .status-pill .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .status-pill.operational .dot { background: var(--up); }
+    .status-pill.degraded .dot { background: #f59e0b; }
+    .status-pill.down .dot { background: var(--down); }
+    .status-pill.unknown .dot { background: var(--unknown); }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .metric {
+      border: 1px solid color-mix(in srgb, var(--text) 13%, transparent);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+    .metric small { color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.7rem; }
+    .metric strong { display: block; margin-top: 6px; font-size: 1.15rem; }
+    .section-title {
+      margin: 0;
+      padding: 14px 18px;
+      border-bottom: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.82rem;
+    }
+    .monitor-list, .timeline { list-style: none; margin: 0; padding: 0; }
+    .monitor-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 18px;
+      border-top: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+    }
+    .monitor-main { display: flex; align-items: center; gap: 10px; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .status-dot.up { background: var(--up); }
+    .status-dot.down { background: var(--down); }
+    .status-dot.unknown { background: var(--unknown); }
+    .monitor-name { font-weight: 600; }
+    .monitor-url { color: var(--muted); font-size: 0.86rem; }
+    .monitor-url a { color: inherit; text-decoration: none; }
+    .monitor-meta { color: var(--muted); font-size: 0.86rem; }
+    .incident { padding: 12px 18px; border-top: 1px solid color-mix(in srgb, var(--text) 10%, transparent); }
+    .incident-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 600; }
+    .incident-status {
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+      padding: 2px 8px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .incident-time { color: var(--muted); font-size: 0.84rem; margin-top: 4px; }
+    .empty { padding: 14px 18px 18px; color: var(--muted); }
+    .subscribe { padding: 14px 18px 18px; display: grid; gap: 10px; }
+    .subscribe p { margin: 0; color: var(--muted); }
+    .subscribe form { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+    .subscribe input {
+      min-height: 42px;
+      border-radius: 12px;
+      border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+      background: color-mix(in srgb, var(--panel) 86%, #020617);
+      color: var(--text);
+      padding: 0 12px;
+    }
+    .subscribe button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 12px;
+      padding: 0 14px;
+      background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 64%, #111827));
+      color: #f8fafc;
+      font-weight: 700;
+    }
+    .footer { color: var(--muted); font-size: 0.82rem; text-align: right; }
+    @media (max-width: 720px) {
+      .monitor-row { grid-template-columns: 1fr; }
+      .subscribe form { grid-template-columns: 1fr; }
+      .footer { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap" aria-live="polite">
+    <section class="card hero">
+      <div class="brand">
+        {{LOGO_HTML}}
+        <div>
+          <h1>{{TITLE}}</h1>
+          <p class="desc">{{DESCRIPTION}}</p>
+        </div>
+      </div>
+      <div class="status-pill {{OVERALL_STATUS_CLASS}}"><span class="dot"></span>{{OVERALL_STATUS_LABEL}}</div>
+      <div class="metrics">
+        <div class="metric"><small>Uptime (90 days)</small><strong>{{UPTIME_90D}}%</strong></div>
+        <div class="metric"><small>Monitors</small><strong>{{MONITOR_COUNT}}</strong></div>
+        <div class="metric"><small>Operational</small><strong>{{UP_MONITORS}}</strong></div>
+        <div class="metric"><small>Issues</small><strong>{{DOWN_MONITORS}}</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Monitor Status</h2>
+      <ul class="monitor-list">{{MONITOR_ROWS}}</ul>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Recent Incident Timeline</h2>
+      <ul class="timeline">{{INCIDENT_ROWS}}</ul>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Subscribe For Updates</h2>
+      <div class="subscribe">
+        <p>Get outage and recovery alerts for this status page.</p>
+        <form id="status-subscribe-form" method="post" action="{{SUBSCRIBE_ENDPOINT}}">
+          <input type="email" name="email" placeholder="you@company.com" required maxlength="254" />
+          <button type="submit">Notify Me</button>
+        </form>
+        <p id="status-subscribe-feedback"></p>
+      </div>
+    </section>
+
+    <div class="footer">Last generated: {{GENERATED_AT}}</div>
+  </main>
+
+  <script>
+    (function () {
+      const form = document.getElementById("status-subscribe-form");
+      const feedback = document.getElementById("status-subscribe-feedback");
+      if (!form || !feedback || !window.fetch) return;
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const email = String(formData.get("email") || "").trim();
+        if (!email) {
+          feedback.textContent = "Email is required.";
+          return;
+        }
+        feedback.textContent = "Saving subscription...";
+        try {
+          const response = await fetch(form.action, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            feedback.textContent = payload?.error?.message || "Unable to subscribe right now.";
+            return;
+          }
+          feedback.textContent = payload.message || "Subscribed successfully.";
+          form.reset();
+        } catch (error) {
+          feedback.textContent = "Network error while subscribing. Please retry.";
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

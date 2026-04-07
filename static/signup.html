@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{SIGNUP_META_TITLE}}</title>
+    <meta name="description" content="{{SIGNUP_META_DESCRIPTION}}">
+    <style>
+        :root {
+            --bg: #05070f;
+            --panel: #111827;
+            --panel-strong: #0b1220;
+            --accent: #f97316;
+            --accent-soft: #fb923c;
+            --text: #f8fafc;
+            --muted: #9ca3af;
+            --ok: #22c55e;
+            --warn: #f59e0b;
+            --error: #ef4444;
+            --border: rgba(255, 255, 255, 0.12);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(1200px 600px at -15% -10%, rgba(249, 115, 22, 0.24), transparent 65%),
+                radial-gradient(900px 500px at 120% 0%, rgba(14, 165, 233, 0.16), transparent 68%),
+                linear-gradient(180deg, #03040a 0%, var(--bg) 100%);
+            color: var(--text);
+            font-family: "Avenir Next", "Sora", "Segoe UI", sans-serif;
+            padding: 18px;
+        }
+
+        .shell {
+            max-width: 1080px;
+            margin: 0 auto;
+            display: grid;
+            gap: 16px;
+            grid-template-columns: 1fr;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 2px;
+        }
+
+        .brand {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .brand strong { color: var(--accent); }
+
+        .topbar a.secondary {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.92rem;
+        }
+
+        .layout {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: 1fr;
+        }
+
+        .panel {
+            background: linear-gradient(165deg, rgba(17, 24, 39, 0.88), rgba(11, 18, 32, 0.92));
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 24px 54px rgba(2, 6, 23, 0.36);
+        }
+
+        .hero {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            line-height: 1.1;
+            font-family: "Iowan Old Style", "Palatino", serif;
+        }
+
+        .hero h1 span { color: var(--accent); }
+
+        .hero p {
+            margin: 12px 0 0;
+            color: var(--muted);
+            max-width: 62ch;
+        }
+
+        .chips {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chip {
+            border-radius: 999px;
+            border: 1px solid rgba(249, 115, 22, 0.4);
+            padding: 5px 12px;
+            font-size: 0.83rem;
+            color: #fed7aa;
+            background: rgba(249, 115, 22, 0.1);
+        }
+
+        .content {
+            padding: 24px;
+            display: grid;
+            gap: 18px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: 1fr;
+        }
+
+        .field {
+            display: grid;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.88rem;
+            color: #e5e7eb;
+            font-weight: 600;
+        }
+
+        .hint {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        input, select {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(5, 7, 15, 0.68);
+            color: var(--text);
+            padding: 11px 12px;
+            min-height: 44px;
+            font-size: 0.98rem;
+            outline: none;
+            transition: border-color 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: rgba(251, 146, 60, 0.92);
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.14);
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        button {
+            border: 0;
+            border-radius: 12px;
+            min-height: 46px;
+            padding: 0 18px;
+            font-size: 0.97rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            transition: transform 0.16s ease, box-shadow 0.16s ease;
+            box-shadow: 0 10px 24px rgba(249, 115, 22, 0.35);
+        }
+
+        button:hover { transform: translateY(-1px); }
+        button:disabled {
+            cursor: wait;
+            opacity: 0.72;
+            transform: none;
+        }
+
+        .status {
+            margin: 0;
+            font-size: 0.92rem;
+            color: var(--muted);
+            min-height: 1.4em;
+        }
+
+        .status.success { color: var(--ok); }
+        .status.error { color: var(--error); }
+        .status.warn { color: var(--warn); }
+
+        .success-card {
+            display: none;
+            margin-top: 4px;
+            border: 1px solid rgba(34, 197, 94, 0.35);
+            border-radius: 14px;
+            background: rgba(34, 197, 94, 0.1);
+            padding: 14px;
+            gap: 9px;
+        }
+
+        .success-card h3 {
+            margin: 0;
+            font-size: 1.06rem;
+        }
+
+        .links {
+            display: grid;
+            gap: 7px;
+        }
+
+        .links a {
+            color: #93c5fd;
+            text-decoration: none;
+            overflow-wrap: anywhere;
+            font-size: 0.94rem;
+        }
+
+        .links a:hover { text-decoration: underline; }
+
+        .api-key {
+            margin: 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+            font-size: 0.84rem;
+            color: #d1d5db;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px dashed rgba(156, 163, 175, 0.45);
+            border-radius: 10px;
+            padding: 8px 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .note {
+            margin: 0;
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .side {
+            padding: 20px;
+            display: grid;
+            gap: 14px;
+            border-top: 1px solid var(--border);
+            background: rgba(3, 7, 18, 0.36);
+        }
+
+        .step-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 11px;
+        }
+
+        .step-list li {
+            display: grid;
+            gap: 3px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .step-list li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: var(--accent);
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2);
+        }
+
+        .step-list strong { font-size: 0.92rem; }
+        .step-list span { color: var(--muted); font-size: 0.84rem; }
+
+        @media (min-width: 900px) {
+            .layout {
+                grid-template-columns: 1.18fr 0.82fr;
+                align-items: start;
+            }
+            .side {
+                border-top: 0;
+                border-left: 1px solid var(--border);
+                min-height: 100%;
+            }
+            .grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .field.full { grid-column: 1 / -1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <div class="topbar">
+            <a class="brand" href="/">🦉 <strong>OwlPulse</strong></a>
+            <a class="secondary" href="/compare">Compare vs UptimeRobot</a>
+        </div>
+
+        <div class="panel layout">
+            <section>
+                <div class="hero">
+                    <h1>{{SIGNUP_HERO_TITLE}}</h1>
+                    <p>{{SIGNUP_HERO_DESCRIPTION}}</p>
+                    <div class="chips">
+                        <span class="chip">{{SIGNUP_CHIP_ONE}}</span>
+                        <span class="chip">{{SIGNUP_CHIP_TWO}}</span>
+                        <span class="chip">{{SIGNUP_CHIP_THREE}}</span>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <form id="signup-form" novalidate>
+                        <div class="grid">
+                            <div class="field">
+                                <label for="service-name">Service Name</label>
+                                <input id="service-name" name="service_name" type="text" maxlength="100" required placeholder="Acme API" />
+                                <p class="hint">This becomes your status page title.</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="work-email">Work Email</label>
+                                <input id="work-email" name="email" type="email" maxlength="254" required placeholder="you@company.com" />
+                                <p class="hint">We use this for alerts and account recovery.</p>
+                            </div>
+
+                            <div class="field full">
+                                <label for="monitor-url">URL To Monitor</label>
+                                <input id="monitor-url" name="url" type="url" maxlength="2048" required placeholder="https://api.yourcompany.com/health" />
+                                <p class="hint">Use any HTTP(S) endpoint that should always respond.</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="status-slug">Status Slug (optional)</label>
+                                <input id="status-slug" name="status_slug" type="text" pattern="[a-z0-9-]{3,64}" maxlength="64" placeholder="acme" />
+                                <p class="hint">Generates <code>https://acme.owlpulse.org</code>.</p>
+                            </div>
+
+                            <div class="field">
+                                <label for="plan">Plan</label>
+                                <select id="plan" name="plan">
+                                    <option value="free">Free</option>
+                                    <option value="pro">Pro - $12/mo</option>
+                                    <option value="biz">Biz - $29/mo</option>
+                                </select>
+                                <p class="hint">You can upgrade after creation.</p>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button id="submit-btn" type="submit">{{SIGNUP_SUBMIT_LABEL}}</button>
+                            <p id="form-status" class="status" aria-live="polite"></p>
+                        </div>
+                    </form>
+
+                    <div id="success-card" class="success-card" aria-live="polite">
+                        <h3>{{SIGNUP_SUCCESS_LABEL}}</h3>
+                        <div class="links">
+                            <a id="status-link-main" href="#" target="_blank" rel="noopener noreferrer"></a>
+                            <a id="status-link-sub" href="#" target="_blank" rel="noopener noreferrer"></a>
+                        </div>
+                        <p class="api-key" id="api-key-output"></p>
+                        <p class="note">Save your API key. It is required for managing monitors and status pages via API.</p>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="side">
+                <h2 style="margin:0;font-size:1.08rem;">What Happens Next</h2>
+                <ul class="step-list">
+                    <li>
+                        <strong>1. Monitor Starts Immediately</strong>
+                        <span>OwlPulse begins checking your endpoint as soon as signup completes.</span>
+                    </li>
+                    <li>
+                        <strong>2. Public Status URL Is Generated</strong>
+                        <span>You get both a direct page URL and a subdomain URL.</span>
+                    </li>
+                    <li>
+                        <strong>3. Share With Customers</strong>
+                        <span>Post the link in your app, docs, and support channels.</span>
+                    </li>
+                </ul>
+                <p class="note">Free pages include a small “Powered by OwlPulse” badge.</p>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const form = document.getElementById("signup-form");
+            const submitBtn = document.getElementById("submit-btn");
+            const submitLabel = submitBtn.textContent;
+            const statusEl = document.getElementById("form-status");
+            const successCard = document.getElementById("success-card");
+            const mainLink = document.getElementById("status-link-main");
+            const subLink = document.getElementById("status-link-sub");
+            const apiKeyOutput = document.getElementById("api-key-output");
+
+            const emailInput = document.getElementById("work-email");
+            const slugInput = document.getElementById("status-slug");
+            const planInput = document.getElementById("plan");
+            const offerProgram = window.__owlpulseOfferProgram || {};
+            const arenaAttribution = window.__arenaAttribution || {};
+
+            const query = new URLSearchParams(window.location.search);
+            const prefilledEmail = query.get("email");
+            const prefilledPlan = query.get("plan");
+
+            function getSessionId() {
+                const key = "owlpulse_business_arena_session";
+                let value = window.localStorage.getItem(key);
+                if (!value) {
+                    value = "arena-" + Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
+                    window.localStorage.setItem(key, value);
+                }
+                return value;
+            }
+
+            async function trackEvent(eventName, extra) {
+                const body = Object.assign({}, arenaAttribution, extra || {}, {
+                    event_name: eventName,
+                    surface: "signup",
+                    path: window.location.pathname,
+                    session_id: arenaAttribution.session_id || getSessionId()
+                });
+                try {
+                    await fetch("/internal/arena/events", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(body)
+                    });
+                } catch (error) {
+                    console.warn("arena event failed", error);
+                }
+            }
+
+            if (prefilledEmail) {
+                emailInput.value = prefilledEmail;
+            }
+            if (prefilledPlan && ["free", "pro", "biz", "business"].includes(prefilledPlan.toLowerCase())) {
+                planInput.value = prefilledPlan.toLowerCase() === "business" ? "biz" : prefilledPlan.toLowerCase();
+            } else if (offerProgram.signup && offerProgram.signup.default_plan) {
+                planInput.value = String(offerProgram.signup.default_plan);
+            }
+
+            function setStatus(message, state) {
+                statusEl.textContent = message || "";
+                statusEl.className = "status" + (state ? " " + state : "");
+            }
+
+            function normalizeSlug(value) {
+                return value
+                    .trim()
+                    .toLowerCase()
+                    .replace(/[^a-z0-9-]+/g, "-")
+                    .replace(/-+/g, "-")
+                    .replace(/^-|-$/g, "")
+                    .slice(0, 64);
+            }
+
+            slugInput.addEventListener("blur", function () {
+                if (!slugInput.value) return;
+                slugInput.value = normalizeSlug(slugInput.value);
+            });
+
+            trackEvent("signup_page_view");
+
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault();
+                const serviceName = String(document.getElementById("service-name").value || "").trim();
+                const url = String(document.getElementById("monitor-url").value || "").trim();
+                const email = String(emailInput.value || "").trim();
+                const plan = String(planInput.value || "free");
+                const explicitSlug = normalizeSlug(String(slugInput.value || ""));
+
+                if (!serviceName || !url || !email) {
+                    setStatus("Service name, URL, and email are required.", "error");
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = "Creating...";
+                setStatus("Creating monitor and status page...", "warn");
+                successCard.style.display = "none";
+
+                try {
+                    const payload = {
+                        name: serviceName,
+                        url: url,
+                        email: email,
+                        plan: plan,
+                        source: arenaAttribution.source || (offerProgram.signup && offerProgram.signup.default_source) || "phase1-signup-flow",
+                        channel: arenaAttribution.channel || (offerProgram.signup && offerProgram.signup.default_channel) || "organic",
+                        campaign: arenaAttribution.campaign || (offerProgram.signup && offerProgram.signup.default_campaign) || "owlpulse-core",
+                        experiment_id: arenaAttribution.experiment_id || "",
+                        variant_id: arenaAttribution.variant_id || "",
+                        cohort: arenaAttribution.cohort || "",
+                        session_id: arenaAttribution.session_id || getSessionId(),
+                        create_status_page: true,
+                        status_page_title: serviceName + " Status"
+                    };
+                    if (explicitSlug) {
+                        payload.status_page_slug = explicitSlug;
+                    }
+
+                    await trackEvent("signup_submit", {
+                        value: 0.35,
+                        metadata: {
+                            plan: plan,
+                            monitor_type: "http"
+                        }
+                    });
+
+                    const response = await fetch("/signup", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json().catch(() => ({}));
+                    if (!response.ok) {
+                        const message = data?.error?.message || data?.detail?.message || "Signup failed. Please review your input.";
+                        setStatus(message, "error");
+                        return;
+                    }
+
+                    const statusPage = data.status_page || {};
+                    const mainUrl = statusPage.public_url || data.status_page_url || "";
+                    const subdomainUrl = statusPage.subdomain_url || data.status_page_subdomain_url || "";
+
+                    if (!mainUrl && !subdomainUrl) {
+                        setStatus("Monitor created, but status page URL was not returned.", "warn");
+                        return;
+                    }
+
+                    if (mainUrl) {
+                        mainLink.href = mainUrl;
+                        mainLink.textContent = mainUrl;
+                        mainLink.style.display = "inline";
+                    } else {
+                        mainLink.style.display = "none";
+                    }
+
+                    if (subdomainUrl) {
+                        subLink.href = subdomainUrl;
+                        subLink.textContent = subdomainUrl;
+                        subLink.style.display = "inline";
+                    } else {
+                        subLink.style.display = "none";
+                    }
+
+                    apiKeyOutput.textContent = "API key: " + (data.api_key || "(not returned)");
+                    successCard.style.display = "grid";
+                    setStatus("Live in seconds. Share your status URL with customers.", "success");
+                    form.reset();
+                    if (prefilledEmail) {
+                        emailInput.value = prefilledEmail;
+                    }
+                } catch (err) {
+                    setStatus("Network error. Please retry.", "error");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = submitLabel;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Sample OwlPulse Status</title>
+  <style>
+    :root {
+      --accent: #3B82F6;
+      --bg: #0A0E1A;
+      --text: #E2E8F0;
+      --text-muted: color-mix(in srgb, var(--text) 62%, #8b95aa);
+      --panel: color-mix(in srgb, var(--bg) 78%, #111827);
+      --panel-strong: color-mix(in srgb, var(--bg) 60%, #020617);
+      --border: color-mix(in srgb, var(--text) 14%, transparent);
+      --up: #22c55e;
+      --down: #ef4444;
+      --degraded: #f59e0b;
+      --unknown: #94a3b8;
+      --radius: 20px;
+      --shadow: 0 16px 40px rgba(2, 6, 23, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: "Avenir Next", "Manrope", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at -10% -10%, color-mix(in srgb, var(--accent) 24%, transparent), transparent 70%),
+        radial-gradient(900px 520px at 110% 0%, color-mix(in srgb, #22d3ee 16%, transparent), transparent 65%),
+        linear-gradient(180deg, color-mix(in srgb, var(--bg) 72%, #020617), var(--bg));
+      line-height: 1.5;
+      padding: 32px 16px 48px;
+    }
+
+    .status-shell {
+      max-width: 1040px;
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero {
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 6px);
+      padding: clamp(20px, 4vw, 36px);
+      background:
+        linear-gradient(140deg, color-mix(in srgb, var(--accent) 16%, var(--panel-strong)), var(--panel));
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      aspect-ratio: 1;
+      border-radius: 999px;
+      right: -100px;
+      top: -80px;
+      background: color-mix(in srgb, var(--accent) 30%, transparent);
+      filter: blur(10px);
+      pointer-events: none;
+    }
+
+    .hero-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-fallback {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: color-mix(in srgb, var(--accent) 24%, #0f172a);
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      font-size: 0.85rem;
+    }
+
+    .title {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino", "Times New Roman", serif;
+      font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+    }
+
+    .description {
+      margin: 8px 0 0;
+      color: var(--text-muted);
+      max-width: 70ch;
+    }
+
+    .status-pill {
+      align-self: center;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 600;
+      letter-spacing: 0.015em;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--panel) 65%, #020617);
+      white-space: nowrap;
+    }
+
+    .status-pill .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+    }
+
+    .status-pill.operational .dot { background: var(--up); }
+    .status-pill.degraded .dot { background: var(--degraded); }
+    .status-pill.down .dot { background: var(--down); }
+    .status-pill.unknown .dot { background: var(--unknown); }
+
+    .hero-metrics {
+      margin-top: 24px;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    }
+
+    .metric {
+      padding: 14px 14px 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--panel) 82%, #020617);
+    }
+
+    .metric-label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .metric-value {
+      display: block;
+      margin-top: 8px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--panel) 90%, #020617);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 18px 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .monitor-list { list-style: none; margin: 0; padding: 4px 0; }
+
+    .monitor-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 16px;
+      align-items: center;
+      padding: 14px 20px;
+      border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+    }
+
+    .monitor-row:first-child { border-top: 0; }
+
+    .monitor-main {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .monitor-name {
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+
+    .monitor-url {
+      margin-top: 2px;
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      overflow-wrap: anywhere;
+    }
+
+    .monitor-url a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .monitor-url a:hover { border-color: color-mix(in srgb, var(--text-muted) 75%, transparent); }
+
+    .status-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex: 0 0 11px;
+    }
+    .status-dot.up { background: var(--up); }
+    .status-dot.down { background: var(--down); }
+    .status-dot.unknown { background: var(--unknown); }
+
+    .monitor-meta {
+      text-align: right;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .timeline { list-style: none; margin: 0; padding: 0 20px 16px; }
+
+    .incident {
+      margin-top: 14px;
+      padding-left: 16px;
+      border-left: 2px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+    }
+
+    .incident-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    .incident-time {
+      color: var(--text-muted);
+      font-size: 0.86rem;
+    }
+
+    .incident-status {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .incident-status.down { color: #fecaca; background: rgba(127, 29, 29, 0.3); }
+    .incident-status.up { color: #bbf7d0; background: rgba(20, 83, 45, 0.3); }
+    .incident-status.unknown { color: #cbd5e1; background: rgba(30, 41, 59, 0.4); }
+
+    .empty-state {
+      padding: 18px 20px 24px;
+      color: var(--text-muted);
+    }
+
+    .subscribe {
+      padding: 18px 20px 22px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .subscribe-copy {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .subscribe-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .subscribe-form input[type="email"] {
+      min-height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--panel) 75%, #020617);
+      color: var(--text);
+      padding: 0 12px;
+      font-size: 0.95rem;
+    }
+
+    .subscribe-form button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 12px;
+      padding: 0 16px;
+      background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #111827));
+      color: #f8fafc;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+    }
+
+    .subscribe-feedback {
+      margin: 0;
+      min-height: 1.2em;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .footer-note {
+      color: var(--text-muted);
+      font-size: 0.83rem;
+      text-align: right;
+      margin-top: -2px;
+    }
+
+    @media (max-width: 740px) {
+      body { padding: 20px 12px 28px; }
+      .status-shell { gap: 14px; }
+      .hero { border-radius: 18px; padding: 18px; }
+      .panel { border-radius: 16px; }
+      .monitor-row { grid-template-columns: 1fr; }
+      .monitor-meta { text-align: left; }
+      .subscribe-form { grid-template-columns: 1fr; }
+      .footer-note { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <main class="status-shell" aria-live="polite">
+    <section class="hero">
+      <div class="hero-head">
+        <div>
+          <div class="brand">
+            <div class="brand-fallback">OP</div>
+            <div>
+              <h1 class="title">Sample OwlPulse Status</h1>
+              <p class="description">Demonstration template render output.</p>
+            </div>
+          </div>
+        </div>
+        <div class="status-pill operational">
+          <span class="dot"></span>
+          <span>All Systems Operational</span>
+        </div>
+      </div>
+
+      <div class="hero-metrics">
+        <div class="metric">
+          <span class="metric-label">Uptime (90 days)</span>
+          <span class="metric-value">99.98%</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Monitors</span>
+          <span class="metric-value">3</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Operational</span>
+          <span class="metric-value">3</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Issues</span>
+          <span class="metric-value">0</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Monitor Status</h2>
+      <ul class="monitor-list">
+        <li class="monitor-row"><div><div class="monitor-main"><span class="status-dot up"></span><span class="monitor-name">API</span></div><div class="monitor-url"><a href="https://example.com/api" target="_blank" rel="noopener noreferrer">https://example.com/api</a></div></div><div class="monitor-meta">100.00% uptime (90d) · 120 checks</div></li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>Recent Incident Timeline</h2>
+      <ul class="timeline">
+        <li class="empty-state">No incidents in the recent timeline.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>Subscribe For Updates</h2>
+      <div class="subscribe">
+        <p class="subscribe-copy">Get outage and recovery alerts for this status page.</p>
+        <form id="status-subscribe-form" class="subscribe-form" method="post" action="/status/sample/subscribe">
+          <input type="email" name="email" placeholder="you@company.com" required maxlength="254" />
+          <button type="submit">Notify Me</button>
+        </form>
+        <p id="status-subscribe-feedback" class="subscribe-feedback" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="footer-note">Last generated: 2026-04-06 20:51 UTC</div>
+  </main>
+
+  <script>
+    (function () {
+      const form = document.getElementById("status-subscribe-form");
+      const feedback = document.getElementById("status-subscribe-feedback");
+      if (!form || !feedback || !window.fetch) return;
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const email = String(formData.get("email") || "").trim();
+        if (!email) {
+          feedback.textContent = "Email is required.";
+          return;
+        }
+
+        feedback.textContent = "Saving subscription...";
+        try {
+          const response = await fetch(form.action, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            const message = payload?.error?.message || payload?.detail?.message || "Unable to subscribe right now.";
+            feedback.textContent = message;
+            return;
+          }
+          feedback.textContent = payload.message || "Subscribed. You will receive updates for incidents.";
+          form.reset();
+        } catch (error) {
+          feedback.textContent = "Network error while subscribing. Please retry.";
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

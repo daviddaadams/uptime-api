@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OwlPulse — Simple Uptime Monitoring</title>
+    <meta name="description" content="Simple uptime monitoring that just works. 1-minute checks, instant alerts, free for commercial use. No BS pricing.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦉</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        .logo { font-size: 1.8rem; font-weight: 700; }
+        .logo span { margin-right: 8px; }
+        nav a {
+            color: #fff; text-decoration: none; margin-left: 30px;
+            opacity: 0.8; transition: opacity 0.2s;
+        }
+        nav a:hover { opacity: 1; }
+        .hero { text-align: center; padding: 80px 20px 60px; }
+        h1 { font-size: 3.5rem; font-weight: 700; margin-bottom: 20px; line-height: 1.2; }
+        .subtitle {
+            font-size: 1.4rem; opacity: 0.8; margin-bottom: 40px;
+            max-width: 600px; margin-left: auto; margin-right: auto;
+        }
+        .cta-button {
+            background: #4f46e5; color: #fff; border: none;
+            padding: 16px 40px; font-size: 1.1rem; font-weight: 600;
+            border-radius: 8px; cursor: pointer; text-decoration: none;
+            display: inline-block; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.4);
+        }
+        .cta-button.secondary { background: #374151; }
+        .features {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px; padding: 60px 0;
+        }
+        .feature {
+            background: rgba(255,255,255,0.05); padding: 30px;
+            border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .feature-icon { font-size: 2rem; margin-bottom: 15px; }
+        .feature h3 { font-size: 1.2rem; margin-bottom: 10px; }
+        .feature p { opacity: 0.7; line-height: 1.6; }
+        .pricing { padding: 60px 0; text-align: center; }
+        .pricing h2 { font-size: 2.5rem; margin-bottom: 50px; }
+        .pricing-cards {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px; max-width: 960px; margin: 0 auto;
+        }
+        .pricing-card {
+            background: rgba(255,255,255,0.05); padding: 40px 30px;
+            border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .pricing-card.featured { border-color: #4f46e5; background: rgba(79, 70, 229, 0.1); }
+        .pricing-card h3 { font-size: 1.5rem; margin-bottom: 10px; }
+        .price { font-size: 3rem; font-weight: 700; margin-bottom: 5px; }
+        .price span { font-size: 1rem; opacity: 0.6; }
+        .pricing-card ul { list-style: none; margin: 30px 0; text-align: left; }
+        .pricing-card li { padding: 10px 0; opacity: 0.8; }
+        .pricing-card li::before { content: "\2713 "; color: #22c55e; }
+
+        /* Signup Modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: #1e293b; border-radius: 16px; padding: 40px;
+            max-width: 480px; width: 90%; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .modal h2 { font-size: 1.8rem; margin-bottom: 10px; }
+        .modal p { opacity: 0.7; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+        .form-group input {
+            width: 100%; padding: 12px 16px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3);
+            color: #fff; font-size: 1rem; outline: none;
+        }
+        .form-group input:focus { border-color: #4f46e5; }
+        .modal .cta-button { width: 100%; text-align: center; }
+        .close-modal {
+            float: right; background: none; border: none; color: #fff;
+            font-size: 1.5rem; cursor: pointer; opacity: 0.5;
+        }
+        .close-modal:hover { opacity: 1; }
+
+        /* Success State */
+        .success-box {
+            background: rgba(34, 197, 94, 0.1); border: 1px solid #22c55e;
+            border-radius: 12px; padding: 20px; margin-top: 20px;
+        }
+        .success-box h3 { color: #22c55e; margin-bottom: 10px; }
+        .api-key-display {
+            background: #0d1117; padding: 12px; border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace; font-size: 0.85rem;
+            word-break: break-all; margin: 10px 0; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .api-key-display:hover { border-color: #4f46e5; }
+        .copy-hint { font-size: 0.8rem; opacity: 0.5; }
+
+        .api-docs { background: rgba(0,0,0,0.2); padding: 60px 0; text-align: center; }
+        .api-docs h2 { font-size: 2rem; margin-bottom: 20px; }
+        .code-block {
+            background: #0d1117; padding: 20px; border-radius: 8px;
+            text-align: left; max-width: 600px; margin: 30px auto; overflow-x: auto;
+        }
+        .code-block code { color: #7ee787; font-family: 'Monaco', 'Menlo', monospace; font-size: 0.9rem; }
+
+        .social-proof { padding: 40px 0; text-align: center; }
+        .social-proof blockquote {
+            font-style: italic; font-size: 1.2rem; opacity: 0.7;
+            max-width: 600px; margin: 0 auto; line-height: 1.6;
+        }
+
+        footer { text-align: center; padding: 40px 20px; opacity: 0.6; }
+        .error-msg { color: #ef4444; font-size: 0.9rem; margin-top: 5px; display: none; }
+        .loading { opacity: 0.6; pointer-events: none; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .subtitle { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo"><span>🦉</span>OwlPulse</div>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="/compare">vs UptimeRobot</a>
+                <a href="/docs">API</a>
+            </nav>
+        </header>
+    </div>
+
+    <section class="hero">
+        <h1>Know when your site goes down.<br>Before your customers do.</h1>
+        <p class="subtitle">Simple uptime monitoring that just works. No bloat, no BS pricing. Free for commercial use.</p>
+        <a href="#" onclick="openSignup()" class="cta-button">Start Monitoring Free &rarr;</a>
+    </section>
+
+    <div class="container">
+        <section class="social-proof">
+            <blockquote>"Switched from UptimeRobot after they changed their ToS. OwlPulse just works — set it up in 2 minutes."</blockquote>
+        </section>
+
+        <section id="features" class="features">
+            <div class="feature">
+                <div class="feature-icon">&#9889;</div>
+                <h3>60-Second Checks</h3>
+                <p>Catch outages fast. Pro checks every minute. Know immediately when something's wrong.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#128276;</div>
+                <h3>Instant Alerts</h3>
+                <p>Get notified via webhook the moment your site goes down or comes back up. No noise, no false positives.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#128200;</div>
+                <h3>Uptime Reports</h3>
+                <p>Track response times and uptime percentages. Historical data to prove your SLA compliance.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#128187;</div>
+                <h3>Developer-First API</h3>
+                <p>RESTful API with clear docs. Add a monitor in one curl command. No SDK needed.</p>
+            </div>
+        </section>
+
+        <section id="pricing" class="pricing">
+            <h2>Simple, Honest Pricing</h2>
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <h3>Free</h3>
+                    <div class="price">$0<span>/mo</span></div>
+                    <ul>
+                        <li>5 monitors</li>
+                        <li>5-minute checks</li>
+                        <li>Webhook alerts</li>
+                        <li>7-day history</li>
+                        <li>Commercial use OK</li>
+                    </ul>
+                    <a href="#" onclick="openSignup()" class="cta-button secondary">Start Free &rarr;</a>
+                </div>
+                <div class="pricing-card featured">
+                    <h3>Pro</h3>
+                    <div class="price">$9<span>/mo</span></div>
+                    <ul>
+                        <li>25 monitors</li>
+                        <li>1-minute checks</li>
+                        <li>Webhook + email alerts</li>
+                        <li>90-day history</li>
+                        <li>Priority support</li>
+                    </ul>
+                    <a href="/checkout/pro" class="cta-button">Start Pro &rarr;</a>
+                </div>
+                <div class="pricing-card">
+                    <h3>Business</h3>
+                    <div class="price">$29<span>/mo</span></div>
+                    <ul>
+                        <li>100 monitors</li>
+                        <li>30-second checks</li>
+                        <li>All alert channels</li>
+                        <li>1-year history</li>
+                        <li>Dedicated support</li>
+                    </ul>
+                    <a href="/checkout/business" class="cta-button secondary">Start Business &rarr;</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section class="api-docs">
+        <div class="container">
+            <h2>Up and Running in 30 Seconds</h2>
+            <p style="opacity: 0.7; margin-bottom: 20px;">Sign up, get your API key, add your first monitor</p>
+            <div class="code-block">
+                <code>
+<span style="color:#8b949e;"># Add your first monitor</span><br>
+curl -X POST https://api.owlpulse.org/monitors \<br>
+&nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+&nbsp;&nbsp;-H "X-API-Key: YOUR_KEY" \<br>
+&nbsp;&nbsp;-d '{"url": "https://yoursite.com", "name": "My Site"}'<br>
+<br>
+<span style="color:#8b949e;"># Check status</span><br>
+curl https://api.owlpulse.org/monitors \<br>
+&nbsp;&nbsp;-H "X-API-Key: YOUR_KEY"
+                </code>
+            </div>
+            <a href="/docs" class="cta-button" style="background: transparent; border: 2px solid #4f46e5;">View Full API Docs &rarr;</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>Built by indie devs who got tired of paying $50/mo for a cron job.</p>
+        <p style="margin-top: 10px;">&copy; 2026 OwlPulse</p>
+    </footer>
+
+    <!-- Signup Modal -->
+    <div class="modal-overlay" id="signupModal">
+        <div class="modal">
+            <button class="close-modal" onclick="closeSignup()">&times;</button>
+            <div id="signupForm">
+                <h2>Start Monitoring</h2>
+                <p>Add your first website. You'll get an API key instantly.</p>
+                <div class="form-group">
+                    <label>Website URL</label>
+                    <input type="url" id="siteUrl" placeholder="https://yoursite.com" required>
+                    <div class="error-msg" id="urlError">Please enter a valid URL</div>
+                </div>
+                <div class="form-group">
+                    <label>Monitor Name</label>
+                    <input type="text" id="siteName" placeholder="My Website" required>
+                    <div class="error-msg" id="nameError">Please enter a name</div>
+                </div>
+                <div class="form-group">
+                    <label>Webhook URL (optional)</label>
+                    <input type="url" id="webhookUrl" placeholder="https://hooks.slack.com/...">
+                </div>
+                <button class="cta-button" onclick="createMonitor()" id="submitBtn">Start Monitoring &rarr;</button>
+            </div>
+            <div id="signupSuccess" style="display:none;">
+                <h2>You're Live!</h2>
+                <p>Your monitor is set up and running. Here's your API key:</p>
+                <div class="success-box">
+                    <h3>Your API Key</h3>
+                    <div class="api-key-display" id="apiKeyDisplay" onclick="copyApiKey()"></div>
+                    <p class="copy-hint">Click to copy</p>
+                </div>
+                <p style="margin-top:20px; opacity:0.7;">Save this key! You'll need it to manage your monitors via the API.</p>
+                <div style="margin-top:20px;">
+                    <a href="/docs" class="cta-button secondary" style="margin-right:10px;">View API Docs</a>
+                    <a href="#" onclick="resetSignup()" class="cta-button">Add Another Monitor</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openSignup() {
+            document.getElementById('signupModal').classList.add('active');
+            // Capture ref parameter for attribution
+            const ref = new URLSearchParams(window.location.search).get('ref');
+            if (ref) {
+                console.log('Attribution source:', ref);
+            }
+        }
+        function closeSignup() {
+            document.getElementById('signupModal').classList.remove('active');
+        }
+        function resetSignup() {
+            document.getElementById('signupForm').style.display = 'block';
+            document.getElementById('signupSuccess').style.display = 'none';
+            document.getElementById('siteUrl').value = '';
+            document.getElementById('siteName').value = '';
+            document.getElementById('webhookUrl').value = '';
+        }
+
+        async function createMonitor() {
+            const url = document.getElementById('siteUrl').value.trim();
+            const name = document.getElementById('siteName').value.trim();
+            const webhook = document.getElementById('webhookUrl').value.trim();
+
+            // Validate
+            let valid = true;
+            if (!url || !url.startsWith('http')) {
+                document.getElementById('urlError').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('urlError').style.display = 'none';
+            }
+            if (!name) {
+                document.getElementById('nameError').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('nameError').style.display = 'none';
+            }
+            if (!valid) return;
+
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
+            btn.textContent = 'Setting up...';
+
+            try {
+                const email = document.getElementById('signupEmail').value.trim();
+                const ref = new URLSearchParams(window.location.search).get('ref') || '';
+                const body = { url: url, name: name, plan: 'free' };
+                if (webhook) body.webhook_url = webhook;
+                if (email) body.email = email;
+                if (ref) body.source = ref;
+
+                const resp = await fetch('/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                if (!resp.ok) {
+                    const err = await resp.json();
+                    throw new Error(err.detail || 'Failed to create monitor');
+                }
+
+                const data = await resp.json();
+                document.getElementById('apiKeyDisplay').textContent = data.api_key;
+                document.getElementById('signupForm').style.display = 'none';
+                document.getElementById('signupSuccess').style.display = 'block';
+            } catch (e) {
+                alert('Error: ' + e.message);
+            } finally {
+                btn.classList.remove('loading');
+                btn.textContent = 'Start Monitoring \u2192';
+            }
+        }
+
+        function copyApiKey() {
+            const key = document.getElementById('apiKeyDisplay').textContent;
+            navigator.clipboard.writeText(key).then(() => {
+                const hint = document.querySelector('.copy-hint');
+                hint.textContent = 'Copied!';
+                setTimeout(() => hint.textContent = 'Click to copy', 2000);
+            });
+        }
+
+        // Close modal on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeSignup();
+        });
+        // Close modal on backdrop click
+        document.getElementById('signupModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeSignup();
+        });
+    </script>
+</body>
+</html>

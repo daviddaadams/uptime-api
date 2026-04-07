@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OwlPulse — Beautiful Status Pages That Actually Work</title>
+    <meta name="description" content="Free status page platform with custom domains, beautiful templates, and built-in monitoring.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦉</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        header { padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        header .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 700; color: var(--accent); text-decoration: none; }
+        .nav a { color: var(--text-muted); text-decoration: none; margin-left: 24px; transition: color 0.2s; }
+        .nav a:hover { color: var(--text); }
+        
+        .hero { padding: 80px 0; text-align: center; }
+        .hero h1 { font-size: 56px; font-weight: 800; margin-bottom: 20px; line-height: 1.1; }
+        .hero h1 span { color: var(--accent); }
+        .hero p { font-size: 20px; color: var(--text-muted); max-width: 600px; margin: 0 auto 32px; }
+        .hero-form { max-width: 440px; margin: 0 auto 24px; display: flex; gap: 8px; }
+        .hero-form input { flex: 1; padding: 14px 16px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.2); background: var(--bg-light); color: var(--text); font-size: 16px; outline: none; transition: border-color 0.2s; }
+        .hero-form input:focus { border-color: var(--accent); }
+        .hero-form input::placeholder { color: var(--text-muted); }
+        .btn { display: inline-block; padding: 14px 32px; background: var(--accent); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; transition: all 0.2s; border: none; cursor: pointer; }
+        .btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        .btn-secondary { background: transparent; border: 2px solid var(--text-muted); }
+        .btn-secondary:hover { border-color: var(--text); }
+        
+        .social-proof { margin-bottom: 24px; color: var(--text-muted); font-size: 14px; }
+        .social-proof .avatars { display: flex; justify-content: center; margin-bottom: 8px; }
+        .social-proof .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-light); border: 2px solid var(--bg); margin-left: -8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .social-proof .avatar:first-child { margin-left: 0; }
+        
+        .features { padding: 80px 0; background: var(--bg-light); }
+        .features h2 { text-align: center; font-size: 40px; margin-bottom: 60px; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; }
+        .feature-card { background: var(--bg); padding: 32px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .feature-card h3 { margin: 16px 0 8px; font-size: 20px; }
+        .feature-card p { color: var(--text-muted); }
+        .feature-icon { font-size: 32px; }
+        
+        .pricing { padding: 80px 0; }
+        .pricing h2 { text-align: center; font-size: 40px; margin-bottom: 48px; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 900px; margin: 0 auto; }
+        .price-card { background: var(--bg-light); padding: 32px; border-radius: 12px; text-align: center; border: 2px solid transparent; }
+        .price-card.featured { border-color: var(--accent); }
+        .price-card h3 { font-size: 24px; margin-bottom: 8px; }
+        .price { font-size: 48px; font-weight: 800; margin-bottom: 24px; }
+        .price span { font-size: 16px; color: var(--text-muted); font-weight: 400; }
+        .price-card ul { list-style: none; text-align: left; margin-bottom: 24px; }
+        .price-card li { padding: 8px 0; color: var(--text-muted); }
+        .price-card li::before { content: "✓"; color: var(--accent); margin-right: 8px; }
+        
+        .cta { padding: 80px 0; text-align: center; background: var(--bg-light); }
+        .cta h2 { font-size: 40px; margin-bottom: 16px; }
+        .cta p { color: var(--text-muted); margin-bottom: 32px; }
+        
+        footer { padding: 40px 0; text-align: center; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.1); }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 36px; }
+            .hero p { font-size: 18px; }
+            .hero-form { flex-direction: column; }
+            .btn-secondary { display: block; margin: 12px 0 0; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">🦉 OwlPulse</a>
+            <nav class="nav">
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="/signup">Sign Up</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="social-proof">
+                <div class="avatars">
+                    <span class="avatar">👨</span><span class="avatar">👩</span><span class="avatar">👨‍💻</span><span class="avatar">👩‍💼</span>
+                </div>
+                <strong>2,000+ developers</strong> already trust OwlPulse
+            </div>
+            <h1>Stop Losing Users to<br><span>Downtime Emergencies</span></h1>
+            <p>The status page that proves you care. Custom domains, beautiful templates, and instant alerts — so users never wonder if you're online.</p>
+            <form class="hero-form" action="/signup" method="get">
+                <input type="email" name="email" placeholder="Enter your email" required>
+                <button type="submit" class="btn">Get Free Status Page</button>
+            </form>
+            <a href="#demo" class="btn btn-secondary">View Live Demo</a>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <h2>Why Status Pages Matter</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💼</div>
+                    <h3>Build Customer Trust</h3>
+                    <p>When downtime hits, users Google your company. A professional status page shows you have your act together.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✨</div>
+                    <h3>Transparency Pays</h3>
+                    <p>Honest updates during incidents turn frustration into goodwill. Own the outage, explain the fix, earn loyalty.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Hidden SEO Bonus</h3>
+                    <p>A status page with your brand signals legitimacy. Plus, you control the narrative when things go sideways.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Beautiful Templates</h3>
+                    <p>Pick from designer-crafted themes. Match your brand, not some 2005 spreadsheet.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Custom Domains</h3>
+                    <p>Your status page lives at status.yourcompany.com — not some random subdomain.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Embeddable Widget</h3>
+                    <p>Drop a mini status badge on your site. Users see it without leaving your page.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2>Simple Pricing</h2>
+            <div class="pricing-grid">
+                <div class="price-card">
+                    <h3>Free</h3>
+                    <div class="price">$0</div>
+                    <ul>
+                        <li>1 status page</li>
+                        <li>OwlPulse subdomain</li>
+                        <li>5 monitors</li>
+                        <li>Basic templates</li>
+                        <li>Email support</li>
+                    </ul>
+                    <a href="/signup" class="btn btn-secondary">Get Started</a>
+                </div>
+                <div class="price-card featured">
+                    <h3>Pro</h3>
+                    <div class="price">$12<span>/mo</span></div>
+                    <ul>
+                        <li>5 status pages</li>
+                        <li>Custom domains</li>
+                        <li>25 monitors</li>
+                        <li>All templates</li>
+                        <li>SMS alerts</li>
+                        <li>Priority support</li>
+                    </ul>
+                    <a href="/signup" class="btn">Go Pro</a>
+                </div>
+                <div class="price-card">
+                    <h3>Business</h3>
+                    <div class="price">$29<span>/mo</span></div>
+                    <ul>
+                        <li>Unlimited pages</li>
+                        <li>Unlimited domains</li>
+                        <li>100 monitors</li>
+                        <li>Team members</li>
+                        <li>Analytics</li>
+                        <li>SLA reporting</li>
+                    </ul>
+                    <a href="/signup" class="btn btn-secondary">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta" id="demo">
+        <div class="container">
+            <h2>Ready to Build Trust?</h2>
+            <p>Create your free status page in under 2 minutes.</p>
+            <a href="/signup" class="btn">Create Your Free Status Page</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>🦉 OwlPulse — Simple, beautiful status pages.</p>
+        </div>
+    </footer>
+</body>
+</html>

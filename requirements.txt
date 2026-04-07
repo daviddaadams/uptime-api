@@ -1,0 +1,8 @@
+# Use --only-binary=:all: for Python 3.14 compatibility
+# pip install --only-binary=:all: -r requirements.txt
+
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+httpx>=0.28.0
+apscheduler>=3.10.0
+pydantic>=2.10.0

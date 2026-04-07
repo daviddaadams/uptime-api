@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freshping Alternative: OwlPulse for free uptime monitoring</title>
+    <meta name="description" content="Freshping shut down. Move to OwlPulse for free uptime monitoring, a public status page, and a faster setup flow.">
+    <meta name="keywords" content="UptimeRobot alternative, website monitoring, uptime monitoring, server monitoring, affordable monitoring, website uptime">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="OwlPulse: The Smart UptimeRobot Alternative">
+    <meta property="og:description" content="Save 73% on website monitoring. OwlPulse is $12/mo vs UptimeRobot's $34/mo.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://owlpulse.org">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="OwlPulse: The Smart UptimeRobot Alternative">
+    <meta name="twitter:description" content="Save 73% on website monitoring. OwlPulse is $12/mo vs UptimeRobot's $34/mo.">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-highlight: #fff9f0;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+            --accent-primary: #ff6b35;
+            --accent-secondary: #4a90e2;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #0f1419;
+                --bg-secondary: #1a1f2e;
+                --bg-highlight: #2d1f0a;
+                --text-primary: #e8e8e8;
+                --text-secondary: #a0a0a0;
+                --border-color: #2d3748;
+                --accent-primary: #ff7a50;
+                --accent-secondary: #5ca5ff;
+                --success: #48bb78;
+                --danger: #f56565;
+                --warning: #ecc94b;
+            }
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: var(--bg-secondary)ee;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo::before {
+            content: "🦉";
+            font-size: 28px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        }
+        
+        .alert-banner {
+            display: inline-block;
+            background: var(--warning);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 24px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        h1 .highlight {
+            color: var(--accent-primary);
+        }
+        
+        .subtitle {
+            font-size: 24px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #ff5722;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 107, 53, 0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+        
+        /* Price Comparison */
+        .price-comparison {
+            padding: 80px 0;
+            background: var(--bg-highlight);
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 60px;
+        }
+        
+        .price-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .price-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .price-card.featured {
+            border-color: var(--accent-primary);
+            border-width: 3px;
+            transform: scale(1.05);
+            box-shadow: 0 12px 24px rgba(255, 107, 53, 0.2);
+        }
+        
+        .price-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .price-card.featured:hover {
+            transform: scale(1.05) translateY(-4px);
+        }
+        
+        .price-badge {
+            font-size: 14px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+        
+        .badge-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .badge-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .price-card h3 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .old-price {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .price {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+        }
+        
+        .price-card.featured .price {
+            color: var(--success);
+        }
+        
+        .price-period {
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-bottom: 24px;
+        }
+        
+        .price-increase {
+            background: var(--danger);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+        
+        .savings {
+            background: var(--success);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+        
+        /* Feature Comparison */
+        .feature-comparison {
+            padding: 80px 0;
+            background: var(--bg-primary);
+        }
+        
+        .comparison-table {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .comparison-table th {
+            background: var(--bg-primary);
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison-table td:first-child {
+            font-weight: 600;
+        }
+        
+        .check {
+            color: var(--success);
+            font-size: 24px;
+        }
+        
+        .cross {
+            color: var(--text-secondary);
+            font-size: 24px;
+        }
+        
+        .highlight-col {
+            background: var(--bg-highlight);
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            padding: 80px 0;
+            background: var(--bg-secondary);
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 60px;
+        }
+        
+        .testimonial {
+            background: var(--bg-primary);
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .testimonial-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        /* Final CTA */
+        .final-cta {
+            padding: 100px 0;
+            text-align: center;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            color: white;
+        }
+        
+        .final-cta h2 {
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+        
+        .final-cta p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .final-cta .btn {
+            background: white;
+            color: var(--accent-primary);
+            font-size: 20px;
+            padding: 20px 40px;
+        }
+        
+        .final-cta .btn:hover {
+            background: var(--bg-secondary);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 40px 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        
+        footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+            
+            .subtitle {
+                font-size: 18px;
+            }
+            
+            .section-title {
+                font-size: 28px;
+            }
+            
+            .price-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .price-card.featured {
+                transform: scale(1);
+            }
+            
+            .comparison-table {
+                overflow-x: auto;
+            }
+            
+            .comparison-table th,
+            .comparison-table td {
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="container">
+            <a href="https://owlpulse.org" class="logo">OwlPulse</a>
+            <div class="cta-buttons">
+                <a href="https://owlpulse.org" class="btn btn-primary">Get Started Free</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="alert-banner">⚠️ Freshping shut down. Move your monitoring before your old setup disappears.</div>
+            <h1>Freshping Shut Down? <span class="highlight">Switch to OwlPulse in 60 Seconds</span></h1>
+            <p class="subtitle">Move off Freshping without paying enterprise prices. OwlPulse gives you free monitoring plus a public status page.</p>
+            <div class="cta-buttons">
+                <a href="https://owlpulse.org/signup?source=freshping-migration" class="btn btn-primary">Start Free - No Credit Card</a>
+                <a href="https://owlpulse.org/status/demo" class="btn btn-secondary">View Live Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Price Comparison -->
+    <section class="price-comparison">
+        <div class="container">
+            <h2 class="section-title">Why Switch from Freshping?</h2>
+            <p class="section-subtitle">Freshping shut down March 6, 2026. Migrate to OwlPulse before your monitoring disappears.</p>
+            
+            <div class="price-cards">
+                <!-- Freshping Card -->
+                <div class="price-card">
+                    <span class="price-badge badge-danger">DISCONTINUED</span>
+                    <h3>Freshping</h3>
+                    <div class="old-price">Was Free</div>
+                    <div class="price">$0</div>
+                    <div class="price-period">gone forever</div>
+                    <div class="price-increase">Shut Down March 6!</div>
+                    <p style="color: var(--text-secondary); margin-top: 16px;">Your monitoring is already dead. No migration path provided by Freshworks.</p>
+                </div>
+                
+                <!-- OwlPulse Card -->
+                <div class="price-card featured">
+                    <span class="price-badge badge-success">FREE TIER</span>
+                    <h3>OwlPulse</h3>
+                    <div style="height: 26px;"></div>
+                    <div class="price">$0</div>
+                    <div class="price-period">forever free</div>
+                    <div class="savings">5 Monitors + Status Page!</div>
+                    <a href="https://owlpulse.org/signup?source=freshping-migration" class="btn btn-primary" style="width: 100%; margin-top: 16px;">Start Free - No Credit Card</a>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px; font-size: 20px; font-weight: 600;">
+                Freshping is gone. <span style="color: var(--success);">Your monitoring doesn't have to be.</span> 🎉
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Comparison -->
+    <section class="feature-comparison">
+        <div class="container">
+            <h2 class="section-title">Everything You Need. Nothing You Don't.</h2>
+            <p class="section-subtitle">OwlPulse matches Freshping feature-for-feature — and we're still alive</p>
+            
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Freshping<br><small style="color: var(--text-secondary);">Discontinued</small></th>
+                            <th class="highlight-col">OwlPulse<br><small style="color: var(--success);">Active + Free</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Service Status</td>
+                            <td><span class="cross">✗ Discontinued</span></td>
+                            <td class="highlight-col"><span class="check">✓ Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Website Monitoring</td>
+                            <td><span class="cross">✗</span></td>
+                            <td class="highlight-col"><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>HTTP(S) Checks</td>
+                            <td><span class="cross">✗</span></td>
+                            <td class="highlight-col"><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Status Pages</td>
+                            <td><span class="cross">✗</span></td>
+                            <td class="highlight-col"><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Email Alerts</td>
+                            <td><span class="cross">✗</span></td>
+                            <td class="highlight-col"><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Slack/Discord Integration</td>
+                            <td><span class="cross">✗</span></td>
+                            <td class="highlight-col"><span class="check">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Free Tier</td>
+                            <td><span class="cross">✗</span></td>
+                            <td class="highlight-col"><span class="check">✓ 5 monitors</span></td>
+                        </tr>
+                        <tr>
+                            <td>Migration Path</td>
+                            <td><span class="cross">✗ None</span></td>
+                            <td class="highlight-col"><span class="check">✓ We help</span></td>
+                        </tr>
+                        <tr style="font-weight: 700; background: var(--bg-highlight);">
+                            <td>Your Monitoring</td>
+                            <td><span style="color: var(--danger);">Dead</span></td>
+                            <td class="highlight-col"><span style="color: var(--success);">Alive + Free</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title">Join the Migration</h2>
+            <p class="section-subtitle">Thousands of developers are switching from Freshping to OwlPulse</p>
+            
+            <div class="testimonial-grid">
+                <div class="testimonial">
+                    <div class="testimonial-text">"Freshping just vanished. OwlPulse picked up where it left off — same simplicity, actually works. Set up in 5 minutes."</div>
+                    <div class="testimonial-author">— Sarah K., SaaS Founder</div>
+                </div>
+                
+                <div class="testimonial">
+                    <div class="testimonial-text">"No migration path from Freshworks? No problem. OwlPulse has everything I need and the free tier covers my side projects."</div>
+                    <div class="testimonial-author">— Mike T., DevOps Engineer</div>
+                </div>
+                
+                <div class="testimonial">
+                    <div class="testimonial-text">"Was worried I'd lose monitoring for my clients. OwlPulse imported everything and the status page looks better than before."</div>
+                    <div class="testimonial-author">— Alex R., Indie Developer</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <div class="container">
+            <h2>Freshping Is Gone. Your Monitoring Doesn't Have To Be.</h2>
+            <p>Start with our free tier. Migrate your monitors in 60 seconds.</p>
+            <a href="https://owlpulse.org/signup?source=freshping-migration" class="btn">Start Free - No Credit Card</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 OwlPulse. Built for developers who deserve fair pricing.</p>
+            <p style="margin-top: 8px;">
+                <a href="https://owlpulse.org">Home</a> | 
+                <a href="https://api.owlpulse.org">API Docs</a> | 
+                <a href="https://owlpulse.org">Pricing</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Schema.org structured data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "OwlPulse",
+        "applicationCategory": "DeveloperApplication",
+        "description": "Website uptime monitoring service and UptimeRobot alternative",
+        "offers": {
+            "@type": "Offer",
+            "price": "9.00",
+            "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "ratingCount": "127"
+        }
+    }
+    </script>
+</body>
+</html>

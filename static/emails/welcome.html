@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{WELCOME_EMAIL_TITLE}}</title>
+    <style>
+        body { margin: 0; padding: 0; background: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+        .header { text-align: center; margin-bottom: 32px; }
+        .logo { font-size: 28px; font-weight: 700; color: #f97316; text-decoration: none; }
+        .content { background: #1e293b; border-radius: 12px; padding: 40px; }
+        h1 { color: #f8fafc; font-size: 28px; margin: 0 0 16px; }
+        p { color: #94a3b8; line-height: 1.6; margin: 0 0 16px; }
+        .btn { display: inline-block; padding: 14px 32px; background: #f97316; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 16px 0; }
+        .features { margin: 32px 0; }
+        .feature { display: flex; align-items: start; margin-bottom: 16px; }
+        .feature-icon { font-size: 20px; margin-right: 12px; }
+        .feature-text strong { color: #f8fafc; display: block; }
+        .feature-text span { color: #94a3b8; font-size: 14px; }
+        .footer { text-align: center; margin-top: 32px; color: #64748b; font-size: 14px; }
+        .footer a { color: #f97316; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="https://owlpulse.org" class="logo">🦉 OwlPulse</a>
+        </div>
+        <div class="content">
+            <h1>{{WELCOME_EMAIL_HEADLINE}}</h1>
+            <p>{{WELCOME_EMAIL_BODY}}</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <span class="feature-icon">✨</span>
+                    <div class="feature-text">
+                        <strong>Beautiful templates</strong>
+                        <span>Pick from designer-crafted themes that match your brand</span>
+                    </div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🌐</span>
+                    <div class="feature-text">
+                        <strong>Custom domain</strong>
+                        <span>Host at status.yourcompany.com</span>
+                    </div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">📱</span>
+                    <div class="feature-text">
+                        <strong>Instant alerts</strong>
+                        <span>Get notified the second something goes down</span>
+                    </div>
+                </div>
+            </div>
+            
+            <p><strong>Next step:</strong> Add your first monitor and customize your page.</p>
+            <a href="{{WELCOME_EMAIL_CTA_URL}}" class="btn">{{WELCOME_EMAIL_CTA_LABEL}}</a>
+            
+            <p>P.S. Need help? Just reply to this email — we're here to help.</p>
+        </div>
+        <div class="footer">
+            <p>{{WELCOME_EMAIL_FOOTER}}</p>
+            <p><a href="https://owlpulse.org">owlpulse.org</a></p>
+        </div>
+    </div>
+</body>
+</html>

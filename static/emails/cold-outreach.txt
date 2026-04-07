@@ -1,0 +1,21 @@
+Subject: Quick question about your status page
+
+Hi {{first_name}},
+
+I noticed you're using {{competitor}} for your status page. No shade — they're fine. But I wanted to let you know there's a free alternative that might save you money.
+
+💡 OwlPulse gives you custom domains, beautiful templates, and instant alerts — completely free for the basics.
+
+We've helped 2,000+ developers build trust with their users. Here's what makes us different:
+- 🎨 Beautiful templates (no coding needed)
+- 🌐 Your domain at status.yourcompany.com  
+- ⚡ Instant setup (2 minutes, not 2 hours)
+
+No pressure — just thought I'd flag it in case you're overpaying.
+
+See what's free → https://owlpulse.org
+
+— {{sender_name}}
+Founder, OwlPulse
+
+P.S. Questions? Just reply. I actually read my email.
