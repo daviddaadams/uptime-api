@@ -24,3 +24,13 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# Secrets & Credentials
+.cloudflared/credentials.json
+*.json.key
+.env
+.env.*
+secrets/
+
+# Local data
+.cloudflared/*.json

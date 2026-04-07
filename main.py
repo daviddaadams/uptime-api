@@ -90,7 +90,9 @@ PLAN_MONITOR_LIMITS = {"free": 3, "pro": 50, "business": 500}
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "").strip()
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "").strip()
 TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER", "").strip()
-SESSION_SECRET = os.getenv("SESSION_SECRET", "owlpulse-dev-session-secret-change-me")
+SESSION_SECRET = os.getenv("SESSION_SECRET")
+if not SESSION_SECRET:
+    raise ValueError("SESSION_SECRET environment variable must be set")
 DASHBOARD_REQUIRE_SAML = os.getenv("DASHBOARD_REQUIRE_SAML", "false").lower() in {"1", "true", "yes", "on"}
 DEFAULT_SLA_TARGET = float(os.getenv("DEFAULT_SLA_TARGET", "99.9"))
 ROLE_PERMISSIONS = {
