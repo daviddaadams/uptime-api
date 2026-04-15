@@ -202,6 +202,15 @@ class TestMonitorCountLimits:
             assert limits["pro"] == 50
             assert limits["business"] == 500
 
+    def test_canonicalize_plan_normalizes_case_whitespace_and_default(self):
+        """Plan normalization should be resilient to messy user input."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            mod = load_main(tmpdir)
+            assert mod.canonicalize_plan(" BIZ ") == "business"
+            assert mod.canonicalize_plan(" Pro ") == "pro"
+            assert mod.canonicalize_plan("") == "free"
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
