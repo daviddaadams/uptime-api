@@ -1,5 +1,6 @@
 """Tests for monitor plan limits enforcement."""
 import pytest
+import sqlite3
 import sys, os
 from pathlib import Path
 import tempfile
@@ -210,6 +211,34 @@ class TestMonitorCountLimits:
             assert mod.canonicalize_plan(" BIZ ") == "business"
             assert mod.canonicalize_plan(" Pro ") == "pro"
             assert mod.canonicalize_plan("") == "free"
+
+    def test_unknown_plan_uses_default_limit_fallback(self):
+        """Unknown plans should still enforce the default safety cap."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            mod = load_main(tmpdir)
+            from fastapi.testclient import TestClient
+            client = TestClient(mod.app)
+            api_key = signup(client, "fallback@test.com", "free")
+            headers = {"X-API-Key": api_key}
+
+            for i in range(2):
+                resp = client.post("/monitors", json={
+                    "name": f"F{i+1}",
+                    "url": f"https://fallback{i+1}.com",
+                    "plan": "free",
+                }, headers=headers)
+                assert resp.status_code == 201
+
+            with sqlite3.connect(mod.DATABASE) as conn:
+                team_id = conn.execute(
+                    "SELECT team_id FROM monitors ORDER BY id LIMIT 1"
+                ).fetchone()[0]
+                with pytest.raises(mod.HTTPException) as exc_info:
+                    mod.check_monitor_count_limit(conn, team_id, "enterprise")
+
+            assert exc_info.value.status_code == 402
+            assert exc_info.value.detail["limit"] == mod.PLAN_MONITOR_LIMITS["free"]
 
 
 if __name__ == "__main__":
