@@ -240,6 +240,34 @@ class TestMonitorCountLimits:
             assert exc_info.value.status_code == 402
             assert exc_info.value.detail["limit"] == mod.PLAN_MONITOR_LIMITS["free"]
 
+    def test_biz_alias_is_canonicalized_in_signup_and_monitor_responses(self):
+        """Alias input should return canonical plan values to clients."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            mod = load_main(tmpdir)
+            from fastapi.testclient import TestClient
+            client = TestClient(mod.app)
+
+            signup_resp = client.post("/signup", json={
+                "email": "canonical@test.com",
+                "plan": "biz",
+                "url": "https://canonical.example.com",
+                "name": "Canonical Monitor",
+            })
+            assert signup_resp.status_code == 201
+            signup_body = signup_resp.json()
+            assert signup_body["plan"] == "business"
+
+            api_key = signup_body["api_key"]
+            headers = {"X-API-Key": api_key}
+            create_resp = client.post("/monitors", json={
+                "name": "Canonical Child",
+                "url": "https://canonical-child.example.com",
+                "plan": "biz",
+            }, headers=headers)
+            assert create_resp.status_code == 201
+            assert create_resp.json()["plan"] == "business"
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
