@@ -296,6 +296,36 @@ class TestMonitorCountLimits:
             err = resp.json().get("error", resp.json())
             assert err["message"] == "Monitor limit reached for business plan"
 
+    def test_biz_alias_limit_error_reports_canonical_limit_and_current(self):
+        """Alias-triggered limit errors should expose business-tier numbers."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            mod = load_main(tmpdir)
+            from fastapi.testclient import TestClient
+            client = TestClient(mod.app)
+            biz_limit = mod.PLAN_MONITOR_LIMITS["business"]
+            api_key = signup(client, "bizcounts@test.com", "biz")
+            headers = {"X-API-Key": api_key}
+
+            for i in range(biz_limit - 1):
+                resp = client.post("/monitors", json={
+                    "name": f"Count{i+1}",
+                    "url": f"https://count{i+1}.example.com",
+                    "plan": "biz",
+                }, headers=headers)
+                assert resp.status_code == 201
+
+            resp = client.post("/monitors", json={
+                "name": "CountOver",
+                "url": "https://count-over.example.com",
+                "plan": "biz",
+            }, headers=headers)
+            assert resp.status_code == 402
+            err = resp.json().get("error", resp.json())
+            assert err["limit"] == biz_limit
+            assert err["current"] == biz_limit
+            assert err["upgrade_url"] == "/checkout/pro"
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
