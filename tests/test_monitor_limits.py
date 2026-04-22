@@ -326,6 +326,34 @@ class TestMonitorCountLimits:
             assert err["current"] == biz_limit
             assert err["upgrade_url"] == "/checkout/pro"
 
+    def test_biz_alias_limit_error_preserves_monitor_limit_code(self):
+        """Alias-triggered failures should keep the same stable error code."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            mod = load_main(tmpdir)
+            from fastapi.testclient import TestClient
+            client = TestClient(mod.app)
+            biz_limit = mod.PLAN_MONITOR_LIMITS["business"]
+            api_key = signup(client, "bizcode@test.com", "biz")
+            headers = {"X-API-Key": api_key}
+
+            for i in range(biz_limit - 1):
+                resp = client.post("/monitors", json={
+                    "name": f"Code{i+1}",
+                    "url": f"https://code{i+1}.example.com",
+                    "plan": "biz",
+                }, headers=headers)
+                assert resp.status_code == 201
+
+            resp = client.post("/monitors", json={
+                "name": "CodeOver",
+                "url": "https://code-over.example.com",
+                "plan": "biz",
+            }, headers=headers)
+            assert resp.status_code == 402
+            err = resp.json().get("error", resp.json())
+            assert err["code"] == "MONITOR_LIMIT_REACHED"
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
