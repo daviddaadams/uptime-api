@@ -40,11 +40,27 @@ Server runs on `http://localhost:8000`
 
 API docs available at `http://localhost:8000/docs`
 
-### 3. Create Your First Monitor
+### 3. Sign Up And Create Your First Monitor
+
+First create an account and capture the returned `api_key`:
+
+```bash
+curl -X POST http://localhost:8000/signup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "you@example.com",
+    "url": "https://example.com",
+    "name": "My Website",
+    "plan": "pro"
+  }'
+```
+
+Then create monitors with that API key:
 
 ```bash
 curl -X POST http://localhost:8000/monitors \
   -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY_HERE" \
   -d '{
     "url": "https://example.com",
     "name": "My Website",
@@ -52,8 +68,6 @@ curl -X POST http://localhost:8000/monitors \
     "webhook_url": "https://your-webhook-endpoint.com/alerts"
   }'
 ```
-
-Response includes your `api_key` - **save this!**
 
 ## API Reference
 
@@ -196,11 +210,13 @@ When a monitor's status changes, the webhook receives:
 
 ## Authentication
 
-All endpoints except `POST /monitors` require the `X-API-Key` header:
+Authenticated monitor operations require the `X-API-Key` header, including `POST /monitors`:
 
 ```bash
 curl -H "X-API-Key: your-api-key-here" http://localhost:8000/monitors
 ```
+
+Get an API key from `POST /signup`, then include it on monitor-management requests.
 
 ## How It Works
 
