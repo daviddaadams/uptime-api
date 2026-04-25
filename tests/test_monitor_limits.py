@@ -354,6 +354,31 @@ class TestMonitorCountLimits:
             err = resp.json().get("error", resp.json())
             assert err["code"] == "MONITOR_LIMIT_REACHED"
 
+    def test_uppercase_biz_alias_is_rejected_by_request_validation(self):
+        """Uppercase alias input is rejected before canonicalization runs."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            mod = load_main(tmpdir)
+            from fastapi.testclient import TestClient
+            client = TestClient(mod.app)
+
+            signup_resp = client.post("/signup", json={
+                "email": "upperbiz@test.com",
+                "plan": "BIZ",
+                "url": "https://upperbiz.example.com",
+                "name": "Upper Biz",
+            })
+            assert signup_resp.status_code == 422
+
+            api_key = signup(client, "lowerbiz@test.com", "biz")
+            headers = {"X-API-Key": api_key}
+            monitor_resp = client.post("/monitors", json={
+                "name": "Upper Child",
+                "url": "https://upper-child.example.com",
+                "plan": "BIZ",
+            }, headers=headers)
+            assert monitor_resp.status_code == 422
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
