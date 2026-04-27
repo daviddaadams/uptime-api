@@ -74,12 +74,13 @@ curl -X POST http://localhost:8000/monitors \
 ### Create Monitor
 ```http
 POST /monitors
+X-API-Key: YOUR_API_KEY
 Content-Type: application/json
 
 {
   "url": "https://example.com",
   "name": "My Site",
-  "plan": "free",  // or "pro"
+  "plan": "free",  // or "pro", "business", "biz"
   "webhook_url": "https://hooks.example.com/alerts"  // optional
 }
 ```
@@ -91,7 +92,6 @@ Content-Type: application/json
   "url": "https://example.com",
   "name": "My Site",
   "plan": "free",
-  "api_key": "YOUR_API_KEY_HERE",
   "status": "unknown",
   "uptime_percentage": 0.0,
   "total_checks": 0
